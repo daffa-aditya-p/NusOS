@@ -57,6 +57,7 @@ void reset_terminal_color();
 
 // Kernel functions (v1.0.1)
 void init_nusos_kernel();
+void show_kernel_boot_info();
 void get_system_info();
 void show_kernel_info();
 int load_plugin(const char* plugin_path);

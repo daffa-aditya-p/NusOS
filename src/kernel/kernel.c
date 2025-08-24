@@ -76,8 +76,8 @@ static int plugin_count = 0;
 
 // Kernel initialization
 void init_nusos_kernel() {
-    printf("🔧 Initializing NusOS Kernel v%s...\n", KERNEL_VERSION);
-    printf("📅 Build: %s\n", KERNEL_BUILD_DATE);
+    // Skip fancy output during setup to avoid conflicts
+    // Just initialize basic structures
     
     // Initialize kernel modules
     strcpy(kernel_modules[0].name, "memory_manager");
@@ -129,7 +129,12 @@ void init_nusos_kernel() {
     security_config.secure_boot = 1;
     security_config.firewall_enabled = 1;
     security_config.intrusion_detection = 1;
-    
+}
+
+// Show kernel boot information (call this separately)
+void show_kernel_boot_info() {
+    printf("🔧 Initializing NusOS Kernel v%s...\n", KERNEL_VERSION);
+    printf("📅 Build: %s\n", KERNEL_BUILD_DATE);
     printf("✅ Kernel modules loaded: %d\n", module_count);
     printf("🔐 Security level: Military Grade (AES-256)\n");
     printf("🛡️ Secure boot: Enabled\n");
