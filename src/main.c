@@ -3,9 +3,14 @@
 // Global variables
 SystemConfig sys_config = {
     .os_name = "NusOS",
-    .version = "1.0.0",
+    .version = "1.0.1",
+    .kernel_version = "5.15.0-nusos-1.0.1",
+    .build_date = __DATE__ " " __TIME__,
     .database_path = "./database/",
-    .config_path = "./database/config/"
+    .config_path = "./database/config/",
+    .security_level = 3,
+    .encryption_enabled = 1,
+    .plugin_support = 1
 };
 
 UserData current_user = {
@@ -122,6 +127,10 @@ void create_directories() {
 
 int main() {
     create_directories();
+    
+    // Initialize kernel first
+    init_nusos_kernel();
+    
     setup_initial_language();
     show_ascii_logo();
     

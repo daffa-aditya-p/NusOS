@@ -79,23 +79,48 @@ void login_system() {
         }
         
         if (attempts < max_attempts) {
-            char input[10];
+            char input[100];
+            if (strcmp(current_language, "indonesian") == 0) {
+                printf("Tekan Enter untuk mencoba lagi, atau ketik 'forgot' untuk reset password: ");
+            } else {
+                printf("Press Enter to try again, or type 'forgot' to reset password: ");
+            }
+            
             fgets(input, sizeof(input), stdin);
             input[strcspn(input, "\n")] = 0;
             
             if (strcmp(input, "forgot") == 0) {
                 if (strcmp(current_language, "indonesian") == 0) {
-                    printf("Masukkan email untuk reset password: ");
+                    printf("🔐 Masukkan email terdaftar untuk reset password: ");
                 } else {
-                    printf("Enter email for password reset: ");
+                    printf("🔐 Enter registered email for password reset: ");
                 }
                 
                 char email[100];
                 fgets(email, sizeof(email), stdin);
                 email[strcspn(email, "\n")] = 0;
                 
-                reset_password_via_email(email);
-                return;
+                if (strlen(email) > 0) {
+                    reset_password_via_email(email);
+                    return;
+                } else {
+                    if (strcmp(current_language, "indonesian") == 0) {
+                        printf("❌ Email tidak boleh kosong!\n");
+                    } else {
+                        printf("❌ Email cannot be empty!\n");
+                    }
+                    continue;
+                }
+            } else if (strlen(input) == 0) {
+                // User pressed Enter, continue with login attempts
+                continue;
+            } else {
+                if (strcmp(current_language, "indonesian") == 0) {
+                    printf("❌ Input tidak valid! Ketik 'forgot' untuk reset password atau tekan Enter untuk mencoba lagi.\n");
+                } else {
+                    printf("❌ Invalid input! Type 'forgot' for password reset or press Enter to try again.\n");
+                }
+                continue;
             }
         }
     }

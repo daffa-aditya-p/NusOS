@@ -1,0 +1,160 @@
+# NusOS Project - .gitignore
+# This ensures users compile the project themselves
+
+# Compiled executables
+nusos
+*.exe
+
+# Object files
+*.o
+*.obj
+
+# Build directories
+build/
+dist/
+out/
+
+# Temporary files
+*.tmp
+*.temp
+*~
+.*.swp
+.*.swo
+
+# System generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# Archive files (users should extract themselves)
+*.tar.gz
+*.zip
+*.rar
+*.7z
+
+# Log files
+*.log
+*.out
+*.err
+
+# Core dumps
+core
+core.*
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Test output files
+test_output/
+*.test
+
+# Dependency directories (if any)
+node_modules/
+.npm/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+.nyc_output
+
+# Documentation build output
+docs/_build/
+
+# Local development files
+local/
+private/
+
+# Compiled static files
+*.css.map
+*.js.map
+
+# Package lock files (let users generate their own)
+package-lock.json
+yarn.lock
+
+# Python cache (if any Python scripts are added)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# Database files that might be generated during runtime
+*.db
+*.sqlite
+*.sqlite3
+
+# User-specific runtime configuration
+config/local.conf
+config/user.conf
+
+# Temporary compilation files
+*.i
+*.s
+*.ii
+*.mi
+*.mii
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Local makefile variations
+Makefile.local
+makefile.local
+
+# Performance profiling data
+*.prof
+*.trace
+
+# Custom user modifications
+user_modifications/
+custom/

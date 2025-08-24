@@ -13,7 +13,8 @@ SOURCES = $(SRCDIR)/main.c \
           $(SRCDIR)/config/setup.c \
           $(SRCDIR)/config/settings.c \
           $(SRCDIR)/auth/login.c \
-          $(SRCDIR)/cli/main_cli.c
+          $(SRCDIR)/cli/main_cli.c \
+          $(SRCDIR)/kernel/kernel.c
 
 # Object files
 OBJECTS = $(SOURCES:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)

@@ -27,8 +27,13 @@ typedef struct {
 typedef struct {
     char os_name[50];
     char version[20];
+    char kernel_version[50];
+    char build_date[50];
     char database_path[200];
     char config_path[200];
+    int security_level;
+    int encryption_enabled;
+    int plugin_support;
 } SystemConfig;
 
 // Function declarations
@@ -49,6 +54,16 @@ void display_themes();
 void display_timezones();
 void set_terminal_color();
 void reset_terminal_color();
+
+// Kernel functions (v1.0.1)
+void init_nusos_kernel();
+void get_system_info();
+void show_kernel_info();
+int load_plugin(const char* plugin_path);
+void encrypt_data(const char* input, char* output, size_t max_size);
+void decrypt_data(const char* input, char* output, size_t max_size);
+void list_kernel_processes();
+void show_performance_stats();
 
 // Global variables
 extern SystemConfig sys_config;
