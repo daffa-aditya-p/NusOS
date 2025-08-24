@@ -48,6 +48,8 @@ void main_cli();
 void show_settings();
 void reset_password_via_email(const char* email);
 int authenticate_user(const char* username, const char* password);
+int update_user_password_by_email(const char* email, const char* new_password);
+void list_all_users();
 void create_directories();
 void show_welcome_message();
 void display_themes();

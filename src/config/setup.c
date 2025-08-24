@@ -32,15 +32,25 @@ void setup_user_data() {
     
     if (strcmp(current_language, "indonesian") == 0) {
         printf("🚀 Mari siapkan NusOS untuk Anda! 🚀\n\n");
-        
         printf("Masukkan nama lengkap: ");
         getchar(); // Clear buffer
         fgets(user.name, sizeof(user.name), stdin);
         user.name[strcspn(user.name, "\n")] = 0; // Remove newline
-        
-        printf("Masukkan username: ");
-        fgets(user.username, sizeof(user.username), stdin);
-        user.username[strcspn(user.username, "\n")] = 0;
+        // Username unik
+        while (1) {
+            printf("Masukkan username: ");
+            fgets(user.username, sizeof(user.username), stdin);
+            user.username[strcspn(user.username, "\n")] = 0;
+            char userfile[300];
+            sprintf(userfile, "./database/users/%s.dat", user.username);
+            FILE *f = fopen(userfile, "r");
+            if (f) {
+                fclose(f);
+                printf("❌ Username sudah terdaftar, silakan pilih username lain.\n");
+            } else {
+                break;
+            }
+        }
         
         printf("Masukkan password: ");
         fgets(user.password, sizeof(user.password), stdin);
@@ -102,10 +112,21 @@ void setup_user_data() {
         getchar(); // Clear buffer
         fgets(user.name, sizeof(user.name), stdin);
         user.name[strcspn(user.name, "\n")] = 0;
-        
-        printf("Enter username: ");
-        fgets(user.username, sizeof(user.username), stdin);
-        user.username[strcspn(user.username, "\n")] = 0;
+        // Unique username
+        while (1) {
+            printf("Enter username: ");
+            fgets(user.username, sizeof(user.username), stdin);
+            user.username[strcspn(user.username, "\n")] = 0;
+            char userfile[300];
+            sprintf(userfile, "./database/users/%s.dat", user.username);
+            FILE *f = fopen(userfile, "r");
+            if (f) {
+                fclose(f);
+                printf("❌ Username already exists, please choose another.\n");
+            } else {
+                break;
+            }
+        }
         
         printf("Enter password: ");
         fgets(user.password, sizeof(user.password), stdin);

@@ -1,12 +1,13 @@
 #include "../include/nusos.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 // Global variables
 SystemConfig sys_config = {
     .os_name = "NusOS",
-    .version = "1.0.1",
-    .kernel_version = "5.15.0-nusos-1.0.1",
+    .version = "1.1",
+    .kernel_version = "5.15.0-nusos-1.1",
     .build_date = __DATE__ " " __TIME__,
     .database_path = "./database/",
     .config_path = "./database/config/",
@@ -46,6 +47,13 @@ void show_ascii_logo() {
 void setup_initial_language() {
     int choice;
     char buffer[100];
+    
+    // Check if running interactively
+    if (!isatty(fileno(stdin))) {
+        // For non-interactive (piped) input, use default English
+        strcpy(current_language, "english");
+        return;
+    }
     
     printf("=== Language Selection / Pilihan Bahasa ===\n");
     printf("1. English\n");
@@ -138,7 +146,11 @@ void create_directories() {
 int main() {
     create_directories();
     setup_initial_language();
-    show_ascii_logo();
+    
+    // Only show ASCII logo if running interactively
+    if (isatty(fileno(stdin))) {
+        show_ascii_logo();
+    }
     
     // Initialize kernel silently
     init_nusos_kernel();
@@ -146,54 +158,20 @@ int main() {
     // Check if first time setup
     FILE *setup_check = fopen("./database/config/setup_complete", "r");
     if (setup_check == NULL) {
-        // For debugging - create a default user instead of interactive setup
-        printf("Creating default user for testing...\n");
-        
-        // Create default user data
-        UserData default_user = {
-            .name = "Test User",
-            .username = "testuser",
-            .password = "password123",
-            .email = "test@example.com",
-            .storage_gb = 50,
-            .theme = "dark_blue",
-            .timezone = "UTC+0",
-            .cli_mode = "both",
-            .terminal_color = "green"
-        };
-        
-        // Save user data
-        char user_file[256];
-        snprintf(user_file, sizeof(user_file), "./database/users/%s.dat", default_user.username);
-        FILE *file = fopen(user_file, "w");
-        if (file) {
-            fprintf(file, "%s\n%s\n%s\n%s\n%d\n%s\n%s\n%s\n%s\n",
-                    default_user.name, default_user.username, default_user.password,
-                    default_user.email, default_user.storage_gb, default_user.theme,
-                    default_user.timezone, default_user.cli_mode, default_user.terminal_color);
-            fclose(file);
-        }
-        
-        // Create default user flag
-        FILE *default_flag = fopen("./database/config/default_user", "w");
-        if (default_flag) {
-            fprintf(default_flag, "%s", default_user.username);
-            fclose(default_flag);
-        }
-        
-        // Create setup complete flag
+        // Interaktif: user harus daftar dulu (multi user support)
+        printf("\n🚀 === NusOS First Time Setup === 🚀\n");
+        printf("Welcome! Please register your first user.\n\n");
+        setup_user_data();
+        // Setelah setup, buat flag setup_complete
         FILE *flag = fopen("./database/config/setup_complete", "w");
         if (flag) {
             fprintf(flag, "1");
             fclose(flag);
         }
-        
-        printf("Default user created successfully!\n");
     } else {
         fclose(setup_check);
     }
-    
-    // Start login system
+    // Start login system (multi user)
     login_system();
     
     return 0;

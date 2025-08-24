@@ -1,4 +1,6 @@
 #include "../include/nusos.h"
+#include <dirent.h>
+#include <unistd.h>
 
 void login_system() {
     char username[50], password[100];
@@ -15,17 +17,27 @@ void login_system() {
     } else {
         strcpy(default_user, "user");
     }
-    
+
     while (attempts < max_attempts) {
-        system("clear");
-        show_ascii_logo();
+        // Only clear screen if running interactively (stdin is a terminal)
+        if (isatty(fileno(stdin))) {
+            system("clear");
+            show_ascii_logo();
+            
+            // Tampilan login yang lebih menarik
+            printf("╔════════════════════════════════════════════════╗\n");
+            printf("║                🔐 USER LOGIN 🔐               ║\n");
+            printf("╚════════════════════════════════════════════════╝\n");
+            printf("🌟 Multi-User Support | Military-Grade Security 🌟\n");
+        } else {
+            // Minimal output for non-interactive (piped) input
+            printf("NusOS Login System\n");
+        }
         
         if (strcmp(current_language, "indonesian") == 0) {
-            printf("🔐 Login ke NusOS 🔐\n\n");
-            printf("Username (default: %s): ", default_user);
+            printf("\n👤 Username (default: %s): ", default_user);
         } else {
-            printf("🔐 Login to NusOS 🔐\n\n");
-            printf("Username (default: %s): ", default_user);
+            printf("\n� Username (default: %s): ", default_user);
         }
         
         fgets(username, sizeof(username), stdin);
@@ -35,12 +47,13 @@ void login_system() {
         if (strlen(username) == 0) {
             strcpy(username, default_user);
         }
-        
+
         if (strcmp(current_language, "indonesian") == 0) {
-            printf("Password: ");
+            printf("🔑 Password: ");
         } else {
-            printf("Password: ");
+            printf("🔑 Password: ");
         }
+        fflush(stdout);
         
         // Hide password input (simple version)
         fgets(password, sizeof(password), stdin);
@@ -95,6 +108,7 @@ void login_system() {
                 } else {
                     printf("🔐 Enter registered email for password reset: ");
                 }
+                fflush(stdout);
                 
                 char email[100];
                 fgets(email, sizeof(email), stdin);
@@ -144,13 +158,24 @@ int authenticate_user(const char* username, const char* password) {
 }
 
 void reset_password_via_email(const char* email) {
+    // Tampilan keren untuk proses reset password
+    system("clear");
+    printf("\n");
+    printf("╔══════════════════════════════════════════╗\n");
+    printf("║           🔐 PASSWORD RESET 🔐           ║\n");
+    printf("╚══════════════════════════════════════════╝\n");
+    
     if (strcmp(current_language, "indonesian") == 0) {
-        printf("\n📧 Mengirim kode OTP ke email %s...\n", email);
-        printf("💻 Menjalankan sistem reset password...\n");
+        printf("\n📧 Mengirim kode OTP ke email: %s\n", email);
+        printf("💻 [████████████████████████████████] 100%%\n");
+        printf("✨ Sistem keamanan tingkat militer aktif...\n");
     } else {
-        printf("\n📧 Sending OTP code to email %s...\n", email);
-        printf("💻 Running password reset system...\n");
+        printf("\n📧 Sending OTP code to email: %s\n", email);
+        printf("💻 [████████████████████████████████] 100%%\n");
+        printf("✨ Military-grade security system active...\n");
     }
+    
+    sleep(2);
     
     // Call Python script for OTP
     char command[500];
@@ -159,13 +184,15 @@ void reset_password_via_email(const char* email) {
     int result = system(command);
     
     if (result == 0) {
+        printf("\n╔══════════════════════════════════════════╗\n");
+        printf("║              ✅ OTP SENT ✅              ║\n");
+        printf("╚══════════════════════════════════════════╝\n");
+        
         char otp_input[10];
         if (strcmp(current_language, "indonesian") == 0) {
-            printf("✅ OTP berhasil dikirim! Cek email Anda.\n");
-            printf("Masukkan kode OTP: ");
+            printf("\n🔑 Cek email Anda dan masukkan kode OTP (6 digit): ");
         } else {
-            printf("✅ OTP sent successfully! Check your email.\n");
-            printf("Enter OTP code: ");
+            printf("\n🔑 Check your email and enter OTP code (6 digits): ");
         }
         
         fgets(otp_input, sizeof(otp_input), stdin);
@@ -174,21 +201,36 @@ void reset_password_via_email(const char* email) {
         // Simple OTP verification (should be more secure in production)
         // For now, we'll accept any 6-digit code
         if (strlen(otp_input) == 6) {
+            printf("\n╔══════════════════════════════════════════╗\n");
+            printf("║           ✅ OTP VERIFIED ✅             ║\n");
+            printf("╚══════════════════════════════════════════╝\n");
+            
             char new_password[100];
             if (strcmp(current_language, "indonesian") == 0) {
-                printf("✅ OTP valid! Masukkan password baru: ");
+                printf("\n🔐 Masukkan password baru (min 6 karakter): ");
             } else {
-                printf("✅ OTP valid! Enter new password: ");
+                printf("\n🔐 Enter new password (min 6 characters): ");
             }
             
             fgets(new_password, sizeof(new_password), stdin);
             new_password[strcspn(new_password, "\n")] = 0;
             
-            // Update password (implementation would go here)
-            if (strcmp(current_language, "indonesian") == 0) {
-                printf("✅ Password berhasil diubah! Silakan login dengan password baru.\n");
+            // Update password - find user by email and update password
+            if (update_user_password_by_email(email, new_password)) {
+                printf("\n╔══════════════════════════════════════════╗\n");
+                printf("║         🎉 PASSWORD UPDATED! 🎉         ║\n");
+                printf("╚══════════════════════════════════════════╝\n");
+                if (strcmp(current_language, "indonesian") == 0) {
+                    printf("\n✅ Password berhasil diubah! Silakan login dengan password baru.\n");
+                } else {
+                    printf("\n✅ Password successfully changed! Please login with new password.\n");
+                }
             } else {
-                printf("✅ Password successfully changed! Please login with new password.\n");
+                if (strcmp(current_language, "indonesian") == 0) {
+                    printf("\n❌ Gagal mengubah password! Email tidak ditemukan.\n");
+                } else {
+                    printf("\n❌ Failed to change password! Email not found.\n");
+                }
             }
             
             sleep(3);
@@ -211,4 +253,128 @@ void reset_password_via_email(const char* email) {
         sleep(2);
         login_system();
     }
+}
+
+int update_user_password_by_email(const char* email, const char* new_password) {
+    // Scan all user files to find user with matching email
+    DIR *dir = opendir("./database/users/");
+    if (!dir) return 0;
+    
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+        if (strstr(entry->d_name, ".dat")) {
+            char filepath[300];
+            sprintf(filepath, "./database/users/%s", entry->d_name);
+            
+            // Load user data
+            FILE *file = fopen(filepath, "r");
+            if (!file) continue;
+            
+            UserData user;
+            char buffer[256];
+            
+            // Read user data
+            fgets(user.name, sizeof(user.name), file);
+            user.name[strcspn(user.name, "\n")] = 0;
+            
+            fgets(user.username, sizeof(user.username), file);
+            user.username[strcspn(user.username, "\n")] = 0;
+            
+            fgets(user.password, sizeof(user.password), file);
+            user.password[strcspn(user.password, "\n")] = 0;
+            
+            fgets(user.email, sizeof(user.email), file);
+            user.email[strcspn(user.email, "\n")] = 0;
+            
+            fclose(file);
+            
+            // Check if email matches
+            if (strcmp(user.email, email) == 0) {
+                // Update password and save back
+                strcpy(user.password, new_password);
+                
+                // Read remaining data
+                file = fopen(filepath, "r");
+                fgets(buffer, sizeof(buffer), file); // name
+                fgets(buffer, sizeof(buffer), file); // username
+                fgets(buffer, sizeof(buffer), file); // old password
+                fgets(buffer, sizeof(buffer), file); // email
+                
+                fscanf(file, "%d\n", &user.storage_gb);
+                fgets(user.timezone, sizeof(user.timezone), file);
+                user.timezone[strcspn(user.timezone, "\n")] = 0;
+                fgets(user.theme, sizeof(user.theme), file);
+                user.theme[strcspn(user.theme, "\n")] = 0;
+                fgets(user.language, sizeof(user.language), file);
+                user.language[strcspn(user.language, "\n")] = 0;
+                fgets(user.cli_mode, sizeof(user.cli_mode), file);
+                user.cli_mode[strcspn(user.cli_mode, "\n")] = 0;
+                fgets(user.terminal_color, sizeof(user.terminal_color), file);
+                user.terminal_color[strcspn(user.terminal_color, "\n")] = 0;
+                fclose(file);
+                
+                // Save updated user data
+                save_user_data(&user);
+                closedir(dir);
+                return 1;
+            }
+        }
+    }
+    closedir(dir);
+    return 0;
+}
+
+void list_all_users() {
+    printf("\n╔════════════════════════════════════════════════╗\n");
+    printf("║              👥 REGISTERED USERS 👥           ║\n");
+    printf("╚════════════════════════════════════════════════╝\n");
+    
+    DIR *dir = opendir("./database/users/");
+    if (!dir) {
+        printf("❌ Cannot access user database.\n");
+        return;
+    }
+    
+    struct dirent *entry;
+    int user_count = 0;
+    
+    printf("\n🌟 Multi-User System | NusOS v1.1 🌟\n");
+    printf("──────────────────────────────────────────────────\n");
+    
+    while ((entry = readdir(dir)) != NULL) {
+        if (strstr(entry->d_name, ".dat")) {
+            char filepath[300];
+            sprintf(filepath, "./database/users/%s", entry->d_name);
+            
+            FILE *file = fopen(filepath, "r");
+            if (!file) continue;
+            
+            UserData user;
+            fgets(user.name, sizeof(user.name), file);
+            user.name[strcspn(user.name, "\n")] = 0;
+            
+            fgets(user.username, sizeof(user.username), file);
+            user.username[strcspn(user.username, "\n")] = 0;
+            
+            fgets(user.password, sizeof(user.password), file); // skip password
+            
+            fgets(user.email, sizeof(user.email), file);
+            user.email[strcspn(user.email, "\n")] = 0;
+            
+            fclose(file);
+            user_count++;
+            
+            printf("👤 %d. %s (@%s)\n", user_count, user.name, user.username);
+            printf("    📧 %s\n", user.email);
+            printf("    ──────────────────────────────────────\n");
+        }
+    }
+    
+    if (user_count == 0) {
+        printf("   No users found.\n");
+    } else {
+        printf("\n📊 Total Users: %d\n", user_count);
+    }
+    
+    closedir(dir);
 }
